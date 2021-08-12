@@ -28,7 +28,7 @@ async def on_message(message):
             await message.channel.send(msg)
 
     if message.content.startswith('!commands'):
-        info_string = 'List of commands:\n!spam: spams the best emote ever\n!loop: sends a fixed message periodically, cannot be stopped\n!ping: pings the mentioned user 7 times atm, (8 if the original command is included)'
+        info_string = 'List of commands:\n!spam: spams the best emote ever\n!loop: sends a fixed message periodically in the channel\n!stop: stops the loop running in the channel\n!ping: pings the mentioned user 7 times atm, (8 if the original command is included)'
         await message.channel.send('```' + info_string + '```')
 
     if message.content.startswith('!botinfo'):

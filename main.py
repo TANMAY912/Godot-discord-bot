@@ -1,4 +1,3 @@
-# Work with Python 3.6
 import discord
 import asyncio
 import time
@@ -7,33 +6,16 @@ TOKEN = 'ODc0NTYzMDk4MTY4NjY4MjEx.YRIyWw.muBUANiaUPIhxcWQ0wAowRfWdfc'
 
 client = discord.Client()
 
-stop = False
-
-async def PingHandler(message):
-    print("ok")
-    spl = message.content.rsplit()
-    print(len(spl))
-    if len(spl) != 2:
-        await message.channel.send('{0.author.mention}'.format(message))
-        return
-    else:
-        # msg = spl[1]
-        await message.channel.send(spl[1])
-
-
+coroutineDict = dict()
 
 async def looper(message):
-    while not stop:
+    while True:
         msg = '<a:tooFunnySphere:872414709167583272>'
         await message.channel.send(msg)
         await asyncio.sleep(32400)
 
-    print('exit')
-
 @client.event
 async def on_message(message):
-    # print(message.content)
-    # we do not want the bot to reply to itself
     if message.author == client.user:
         return
 
@@ -54,10 +36,19 @@ async def on_message(message):
         await message.channel.send('<a:PaimonTantrum:874692011490414642>')
 
     if message.content.startswith('!loop'):
-        # msg = '<a:tooFunnySphere:872414709167583272>'
-        task = asyncio.ensure_future(looper(message))
-        # print(type(task))
-        # await message.channel.send(msg)
+        if message.channel in coroutineDict.keys():
+            await message.channel.send('A loop is already running on this channel')
+        else:
+            task = asyncio.ensure_future(looper(message))
+            coroutineDict[message.channel] = task
+
+    if message.content.startswith('!stop'):
+        if message.channel in coroutineDict.keys():
+            coroutineDict[message.channel].cancel()
+            del coroutineDict[message.channel]
+            await message.channel.send('The loop is stopped')
+        else:
+            await message.channel.send('There is no loop running on this channel')
 
     if message.content.startswith('!ping'):
         print("ok")
@@ -68,7 +59,6 @@ async def on_message(message):
             if spl[1][0:2] != '<@' or spl[1][-1] != '>':
                 await message.channel.send('{0.author.mention}'.format(message) + ' Type a valid username')
                 await message.channel.send('<a:PaimonTantrum:874692011490414642>')
-                    # await message.channel.send('{0.author.mention}'.format(message) + ' ?')
             else:
                 for i in range(7):
                     await message.channel.send(spl[1])
@@ -89,22 +79,8 @@ async def on_message(message):
             await message.channel.send('{0.author.mention}'.format(message) + ' follow the format')
             await message.channel.send('<a:PaimonTantrum:874692011490414642>')
 
-
-    if message.content.startswith('!stop'):
-        stop = True
-        task.cancel
-        msg = 'stp'
-        await message.channel.send(msg)
-
-
-
-
-
 @client.event
 async def on_ready():
     print('Bot online')
-    # print(client.user.name)
-    # print(client.user.id)
-    # print('------')
 
 client.run(TOKEN)

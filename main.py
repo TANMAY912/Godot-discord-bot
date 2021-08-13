@@ -21,7 +21,7 @@ async def messageLooper(message):
         await asyncio.sleep(32400)
 
 async def statusLooper(message):
-    monitor = True
+    monitorFlag = True
     while True:
         for member in message.guild.members:
             if str(member.status) == 'online':
@@ -102,10 +102,9 @@ async def on_message(message):
         if len(message.content.rsplit()) != 1:
             await message.channel.send('extra arguments provided <a:PaimonTantrum:874692011490414642>')
         elif monitorFlag:
-            await message.channel.send('The channel is being monitored')
+            await message.channel.send('The channel is already being monitored')
             await message.channel.send('<a:tooFunnySphere:872414709167583272>')
         else:
-            ''
             await message.channel.send('monitoring every member')
             await message.channel.send('<a:tooFunnySphere:872414709167583272>')
             await statusLooper(message)

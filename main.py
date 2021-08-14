@@ -12,7 +12,7 @@ client = discord.Client(intents=intents)
 
 coroutineDict = dict()
 statusDict = dict()
-monitorFlag = False
+
 
 async def messageLooper(message):
     while True:
@@ -21,16 +21,18 @@ async def messageLooper(message):
         await asyncio.sleep(32400)
 
 async def statusLooper(message):
-    monitorFlag = True
     while True:
         for member in message.guild.members:
             if str(member.status) == 'online':
-                statusDict[member] = time.ctime(time.time())
+                statusDict[member] = time.ctime(time.time() + 19800)
                 # await message.channel.send(str(member) + ' -> ' + str(time.ctime(time.time())))
         await asyncio.sleep(60)
 
+monitorFlag = False
+
 @client.event
 async def on_message(message):
+    global monitorFlag
     if message.author == client.user:
         return
 
@@ -43,8 +45,22 @@ async def on_message(message):
             await message.channel.send(msg)
 
     if message.content.startswith('!commands'):
-        info_string = 'List of commands:\n!spam: spams the best emote ever\n!loop: sends a fixed message periodically in the channel\n!stop: stops the loop running in the channel\n!ping: pings the mentioned user 7 times atm, (8 if the original command is included)'
-        await message.channel.send('```' + info_string + '```')
+        # info_string = ('List of commands:\n'
+        #                 '!spam: spams the best emote ever\n'
+        #                 '!loop: sends a fixed message periodically in the channel\n'
+        #                 '!stop: stops the loop running in the channel\n'
+        #                 '!ping: pings the mentioned user 7 times atm, (8 if the original command is included)')
+        # # await message.channel.send('```' + info_string + '```')
+        embed=discord.Embed(title="**Godot Bot Info**", url="https://www.youtube.com/watch?v=xvFZjo5PgG0", description="A discord bot made for fun\nCommands start with `!`", color=0x0088ff)
+        embed.set_thumbnail(url="https://lh3.googleusercontent.com/pw/AM-JKLXxpXJbLWT7lnK59M4-lPVZvlk00CIxreXN6epYWXS1N852nWJr8n1JUTLAV8Nwu2v7O1X1AnW4hEZpzfvIpoXY0NgeAuAWSiSqOxBCn_CtvwZZQmAlwsHyNhhzf_DAts0KSWptcvxroHbrsKllpkqV=s795-no")
+        embed.add_field(name="\u200b", value="**List of commands**", inline=False)
+        embed.add_field(name="`!spam`", value="> Spams the best emote ever", inline=False)
+        embed.add_field(name="`!loop`", value="> Sends a fixed message periodically in the channel", inline=False)
+        embed.add_field(name="`!stop`", value="> Stops the loop running in the channel", inline=False)
+        embed.add_field(name="`!ping <user> <number(optional)>`", value="> Tags the mentioned user specified number of times, 7 times if no amount is specified", inline=False)
+        embed.add_field(name="`!monitor`", value="> The bots starts to monitor status of every member in the server", inline=False)
+        embed.add_field(name="`!getstatus <user>`", value="> Returns the time when the user was last online", inline=False)
+        await message.channel.send(embed = embed)
 
     if message.content.startswith('!botinfo'):
         await message.channel.send('No info for you')
@@ -100,12 +116,13 @@ async def on_message(message):
 
     if message.content.startswith('!monitor'):
         if len(message.content.rsplit()) != 1:
-            await message.channel.send('extra arguments provided <a:PaimonTantrum:874692011490414642>')
+            await message.channel.send('Extra arguments provided <a:PaimonTantrum:874692011490414642>')
         elif monitorFlag:
-            await message.channel.send('The channel is already being monitored')
-            await message.channel.send('<a:tooFunnySphere:872414709167583272>')
+            await message.channel.send('The server is already being monitored')
+            # await message.channel.send('<a:tooFunnySphere:872414709167583272>')
         else:
-            await message.channel.send('monitoring every member')
+            monitorFlag = True
+            await message.channel.send('Monitoring every member')
             await message.channel.send('<a:tooFunnySphere:872414709167583272>')
             await statusLooper(message)
         # for guild in client.guilds:
@@ -130,7 +147,7 @@ async def on_message(message):
             if client.get_user(int(re.sub("[^0-9]", "", spl[1]))) in statusDict.keys():
                 await message.channel.send('Last online: ' + str(statusDict[client.get_user(int(re.sub("[^0-9]", "", spl[1])))]))
             else:
-                await message.channel.send("The user has been inactive since the server started")
+                await message.channel.send("The user has been inactive since the bot started monitoring")
 
             # for member in message.guild.members:
 

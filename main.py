@@ -37,7 +37,6 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    await message.channel.send('localhost')
     if '<a:tooFunnySphere:872414709167583272>' in message.content:
         await message.channel.send('<a:tooFunnySphere:872414709167583272>')
 

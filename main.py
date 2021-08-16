@@ -2,11 +2,12 @@ import discord
 import asyncio
 import time
 import re
+import os
 
 intents = discord.Intents().all()
 intents.members = True
 
-TOKEN = 'ODc0NTYzMDk4MTY4NjY4MjEx.YRIyWw.muBUANiaUPIhxcWQ0wAowRfWdfc'
+TOKEN = os.environ['TOKEN_SECRET']
 
 client = discord.Client(intents=intents)
 
@@ -36,6 +37,7 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    await message.channel.send('localhost')
     if '<a:tooFunnySphere:872414709167583272>' in message.content:
         await message.channel.send('<a:tooFunnySphere:872414709167583272>')
 

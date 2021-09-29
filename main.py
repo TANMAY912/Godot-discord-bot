@@ -41,6 +41,12 @@ async def messageLooper(message):
         await message.channel.send(msg)
         await asyncio.sleep(32400)
 
+async def delayedDeleter(message):
+    if message.content[0:2] == '<@' and message.content[-1] == '>' and len(message.content.rsplit()) == 1:
+        # await asyncio.sleep(15)
+        await asyncio.sleep(21600)
+        await message.delete()
+
 async def statusLooper(channel):
     while True:
         for member in channel.guild.members:
@@ -48,11 +54,30 @@ async def statusLooper(channel):
                 statusDict[member] = datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%B %d, %Y %H:%M:%S %Z')
         await asyncio.sleep(60)
 
+async def clearBotSpam():
+    allChannels = client.get_all_channels()
+    for channel in allChannels:
+        if str(channel.type) == 'text':
+            print("Start " + channel.name)
+
+            stableflag = True
+
+            while stableflag:
+                stableflag = False
+                async for message in channel.history(limit = 10000):
+                    if message.author == client.user:
+                        stableflag = True
+                        print(message.created_at)
+                        await message.delete()
+
+            print("Done " + channel.name)
+
 @client.event
 async def on_message(message):
 
     if message.author == client.user:
-        return
+        asyncio.ensure_future(delayedDeleter(message))
+        return        
 
     if '<a:tooFunnySphere:872414709167583272>' in message.content:
         await message.channel.send('<a:tooFunnySphere:872414709167583272>')
@@ -111,7 +136,7 @@ async def on_message(message):
                     await message.channel.send('{0.author.mention}'.format(message) + ' Type a valid username')
                     await message.channel.send('<a:PaimonTantrum:874692011490414642>')
                 else:
-                    for i in range(7):
+                    for i in range(5):
                         await message.channel.send(spl[1])
 
             elif len(spl) == 3:
@@ -140,7 +165,7 @@ async def on_message(message):
                         await message.channel.send('{0.author.mention}'.format(message) + ' Type a valid username')
                         await message.channel.send('<a:PaimonTantrum:874692011490414642>')
                     else:
-                        for i in range(7):
+                        for i in range(5):
                             await message.channel.send(spl[2])
 
                 elif len(spl) == 4:
@@ -191,6 +216,8 @@ async def on_message(message):
     # if message.content.startswith('!type'):
     #     print(type(message.author))
 
+    # if message.content.startswith('!clear'):
+    #     asyncio.ensure_future(clearBotSpam())
 
     if message.content.startswith('!getstatus') or message.content.startswith('! getstatus'):
 
